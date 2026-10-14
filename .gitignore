@@ -1,0 +1,20 @@
+# Videos (kept locally in ~/Videos/wtf, pushed to the headset with adb)
+*.mp4
+*.mov
+*.mkv
+
+# Meta's unlock build (~1.4 GB, re-downloadable from the "Unlocking Oculus Go" blog post)
+*.zip
+
+# Unity generated
+GoKiosk/[Ll]ibrary/
+GoKiosk/[Tt]emp/
+GoKiosk/[Oo]bj/
+GoKiosk/[Ll]ogs/
+GoKiosk/[Uu]ser[Ss]ettings/
+GoKiosk/*.csproj
+GoKiosk/*.sln
+GoKiosk/.vs/
+GoKiosk/Build/*_BackUpThisFolder_ButDontShipItWithYourGame/
+GoKiosk/Build/*_BurstDebugInformation_DoNotShip/
+*.log
