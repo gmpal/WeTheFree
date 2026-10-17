@@ -12,9 +12,9 @@ public class Kiosk : MonoBehaviour
     const float DwellTime = 2f;      // seconds of gaze needed to select
     const float GazeAngle = 11f;     // degrees from flag centre that count as "looking at it"
     const float MenuDistance = 3f;
-    const float FlagSpacing = 26f;   // degrees between flags
+    const float FlagSpacing = 32f;   // degrees between flags
     const float MenuPitch = -12f;    // flags slightly below eye level
-    const float RealignAngle = 75f;  // looking this far from the menu centre...
+    const float RealignAngle = 60f;  // looking this far from the menu centre...
     const float RealignAfter = 1f;   // ...for this long re-centres the menu
     const float SettleDelay = 0.3f;  // wait for tracking to settle after the headset is put on
     // Skybox/Panoramic maps the video's centre (u = 0.5) to +X, i.e. yaw 90°.
