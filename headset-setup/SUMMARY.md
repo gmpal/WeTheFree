@@ -38,7 +38,7 @@ Goal: repurpose an old Oculus Go as a dedicated 360° video player.
 
 ## Kiosk app (GoKiosk)
 
-A custom Unity app: look at a flag (🇬🇧 ENG / 🇫🇷 FRA / 🇳🇱 NED) for about 2 seconds to play that 360 video. It returns to the menu when the video ends or the headset is taken off.
+A custom Unity app: look at a flag (🇩🇪 DEU / 🇬🇧 ENG / 🇫🇷 FRA / 🇳🇱 NED / 🇪🇸 SPA) for about 2 seconds to play that 360 video. It returns to the menu when the video ends or the headset is taken off.
 
 - Project: `C:\Users\gmpal\git\wtf\GoKiosk` (Unity 2019.4.40f1, legacy built-in Oculus VR, package `com.unity.xr.oculus.android@2.38.6`)
 - Package name: `com.wtf.gokiosk`. APK: `GoKiosk\Build\GoKiosk.apk`
@@ -48,7 +48,8 @@ A custom Unity app: look at a flag (🇬🇧 ENG / 🇫🇷 FRA / 🇳🇱 NED) 
   adb install -r C:\Users\gmpal\git\wtf\GoKiosk\Build\GoKiosk.apk
   ```
 - Videos: `C:\Users\gmpal\Videos\wtf\go\{ENG,FRA,NED}.mp4` are the originals with the embedded cover image removed (3840×1920 H.264, no re-encode). On the headset they're in `/sdcard/Android/data/com.wtf.gokiosk/files/`.
-  Audio levelled to ENG (EBU R128): FRA was −22.9 LUFS (+7.7 dB applied), NED −21.6 LUFS with a wide 16 LU range, which still sounded low, so it got gentle compression (`acompressor` threshold −28 dB, ratio 2.5) plus +15.4 dB, ending at −14.8 LUFS with a 7.9 LU range, ENG −15.6 LUFS. A peak limiter at −1.5 dBFS stops clipping, and audio is re-encoded as AAC 192k with the video stream copied. Result: ENG −15.6 / FRA −15.7 / NED −16.0 LUFS. The levelled files are in `C:\Users\gmpal\Videos\wtf\go_leveled\`.
+  Audio levelled to ENG (EBU R128): FRA was −22.9 LUFS (+7.7 dB applied), NED −21.6 LUFS with a wide 16 LU range, which still sounded low, so it got gentle compression (`acompressor` threshold −28 dB, ratio 2.5) plus +15.4 dB, ending at −14.8 LUFS with a 7.9 LU range, ENG −15.6 LUFS. A peak limiter at −1.5 dBFS stops clipping, and audio is re-encoded as AAC 192k with the video stream copied. Result: ENG −15.6 / FRA −15.7 / NED −16.0 LUFS.
+  DEU (−11.4 LUFS, 14.6 LU range) got the same gentle compression, and SPA (−13.7 LUFS) none. Both were then normalised to −15.6 LUFS with a −1.5 dBTP limit, using two-pass `loudnorm` in linear mode. DEU ends with a 5.9 LU range, SPA with 9.9 LU. The levelled files are in `C:\Users\gmpal\Videos\wtf\go_leveled\`.
   To replace a video: `adb push NEW.mp4 /sdcard/Android/data/com.wtf.gokiosk/files/ENG.mp4`
 
 ### What made the Go build work
