@@ -11,6 +11,10 @@ public static class Flags
     static readonly Color FrRed = new Color32(239, 65, 53, 255);
     static readonly Color NlRed = new Color32(174, 28, 40, 255);
     static readonly Color NlBlue = new Color32(33, 70, 139, 255);
+    static readonly Color DeRed = new Color32(221, 0, 0, 255);
+    static readonly Color DeGold = new Color32(255, 206, 0, 255);
+    static readonly Color EsRed = new Color32(170, 21, 27, 255);
+    static readonly Color EsYellow = new Color32(241, 191, 0, 255);
 
     delegate Color Pixel(float x, float y); // x in [0,1] left->right, y in [0,1] bottom->top
 
@@ -31,6 +35,11 @@ public static class Flags
     public static Texture2D France() => Draw((x, y) => x < 1 / 3f ? FrBlue : x < 2 / 3f ? Color.white : FrRed);
 
     public static Texture2D Netherlands() => Draw((x, y) => y > 2 / 3f ? NlRed : y > 1 / 3f ? Color.white : NlBlue);
+
+    public static Texture2D Germany() => Draw((x, y) => y > 2 / 3f ? Color.black : y > 1 / 3f ? DeRed : DeGold);
+
+    // Red-yellow-red with the yellow band twice as tall (civil flag, no coat of arms).
+    public static Texture2D Spain() => Draw((x, y) => y > 0.75f || y < 0.25f ? EsRed : EsYellow);
 
     // Union Jack on a 60x30 grid.
     public static Texture2D UK() => Draw((u, v) =>
