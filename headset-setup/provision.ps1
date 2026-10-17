@@ -27,6 +27,10 @@ foreach ($v in Get-ChildItem $VideoDir -Filter *.mp4) {
 
 # A fresh install is in Android's "stopped" state and ignores BOOT_COMPLETED until launched once.
 Write-Host 'Launching kiosk once (enables autostart)...'
-Invoke-Adb shell monkey -p $pkg -c android.intent.category.LAUNCHER 1 | Out-Null
+Invoke-Adb shell am start -n "$pkg/com.unity3d.player.UnityPlayerActivity" | Out-Null
+Start-Sleep 3
+if (adb shell dumpsys package $pkg | Select-String 'stopped=true') {
+    throw 'The kiosk is still marked as never launched, so it will not autostart. Launch it once from Library > Unknown Sources.'
+}
 
 Write-Host 'Done. The kiosk is running and will start on every boot.'
