@@ -52,11 +52,9 @@ public class Kiosk : MonoBehaviour
 
         langs = new[]
         {
-            new Lang { File = "DEU.mp4", Label = "Deutsch", Flag = Flags.Germany() },
             new Lang { File = "ENG.mp4", Label = "English", Flag = Flags.UK() },
             new Lang { File = "FRA.mp4", Label = "Français", Flag = Flags.France() },
             new Lang { File = "NED.mp4", Label = "Nederlands", Flag = Flags.Netherlands() },
-            new Lang { File = "SPA.mp4", Label = "Español", Flag = Flags.Spain() },
         };
 
         cam = new GameObject("Camera").AddComponent<Camera>();

@@ -1,6 +1,8 @@
 # WeTheFree – Oculus Go 360° video kiosk
 
-An unlocked Oculus Go turned into a self-running 360° video kiosk. It boots into a menu with five flags (🇩🇪 DEU / 🇬🇧 ENG / 🇫🇷 FRA / 🇳🇱 NED / 🇪🇸 SPA). Look at a flag for about 2 seconds to play that language's video. It returns to the menu when the video ends or the headset is taken off.
+Belgium edition (ENG / FRA / NED); the `main` branch also has DEU and SPA.
+
+An unlocked Oculus Go turned into a self-running 360° video kiosk. It boots into a menu with three flags (🇬🇧 ENG / 🇫🇷 FRA / 🇳🇱 NED). Look at a flag for about 2 seconds to play that language's video. It returns to the menu when the video ends or the headset is taken off.
 
 ![menu](headset-setup/menu_screenshot.png)
 
@@ -14,7 +16,7 @@ An unlocked Oculus Go turned into a self-running 360° video kiosk. It boots int
 ## Not in the repo
 The videos (`*.mp4`) are gitignored. Put them on the headset with:
 ```
-adb push ENG.mp4 /sdcard/Android/data/com.wtf.gokiosk/files/ENG.mp4   # same for DEU, FRA, NED, SPA
+adb push ENG.mp4 /sdcard/Android/data/com.wtf.gokiosk/files/ENG.mp4   # same for FRA, NED
 ```
 DEU, FRA, NED and SPA had their audio levelled to match ENG; see `SUMMARY.md` for the settings used.
 
