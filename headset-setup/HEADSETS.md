@@ -13,11 +13,11 @@ On every headset below, Wi-Fi and the standby timer are **not** set.
 | 1KWPH805328162 | Took 4 flash attempts (bad cable/port suspected). |
 | 1KWPH800BK9046 | |
 | 1KWPH810EG8396 | After the flash it comes back without adb. Unlocked by hand from the Volume Up + Power menu. Autostart not checked with a reboot. |
+| 1KWPH802138205 | Unlocked by hand from the Volume Up + Power menu. Also has DEU.mp4 and SPA.mp4 (unused, about 850 MB). Autostart not checked with a reboot. |
 
 ## Not done
 | Serial | State | Next step |
 |---|---|---|
-| 1KWPH802138205 | Done: bootloader unlocked, kiosk installed with all 5 videos, autostart verified. | — |
 
 ## Other
 | Serial | State |
