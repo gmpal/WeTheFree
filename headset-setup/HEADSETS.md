@@ -17,7 +17,7 @@ On every headset below, Wi-Fi and the standby timer are **not** set.
 ## Not done
 | Serial | State | Next step |
 |---|---|---|
-| 1KWPH802138205 | Unlock build flashed (`Total xfer: 2.00x`), bootloader **not** unlocked, no kiosk. Came back without adb, like 1KWPH810EG8396. | Power off, hold Volume Up + Power, stay on the menu (no *Sideload*), then run `fastboot -s 1KWPH802138205 oem unlock` and the provisioning steps. |
+| 1KWPH802138205 | Done: bootloader unlocked, kiosk installed with all 5 videos, autostart verified. | — |
 
 ## Other
 | Serial | State |
