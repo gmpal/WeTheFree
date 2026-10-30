@@ -18,3 +18,5 @@ GoKiosk/.vs/
 GoKiosk/Build/*_BackUpThisFolder_ButDontShipItWithYourGame/
 GoKiosk/Build/*_BurstDebugInformation_DoNotShip/
 *.log
+
+headset-setup/unlock/
