@@ -1,8 +1,9 @@
 # Headset status
 
-Belgium build (`belgium` branch, ENG / FRA / NED). Last updated 2026-10-18.
+Belgium build (`belgium` branch, ENG / FRA / NED). Last updated 2026-10-31.
 
 "Done" means: unlocked (`verifiedbootstate = orange`), kiosk installed, the 3 videos copied, and the kiosk launched once so it autostarts.
+On 2026-10-31 every headset below was updated with `provision.ps1 -VideoList belgium.txt` to the version with the polygon menu, flag borders and the fix for videos that start on their own.
 On every headset below, Wi-Fi and the standby timer are **not** set.
 
 ## Done
