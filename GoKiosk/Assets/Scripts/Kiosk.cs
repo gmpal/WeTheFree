@@ -80,7 +80,9 @@ public class Kiosk : MonoBehaviour
         {
             // First flag at the top, the rest evenly spaced clockwise.
             float a = (90f - i * 360f / langs.Length) * Mathf.Deg2Rad;
-            var dir = Quaternion.Euler(-RingRadius * Mathf.Sin(a), RingRadius * Mathf.Cos(a), 0) * Vector3.forward;
+            // Exactly RingRadius from straight ahead (Euler pitch/yaw would squash the ring).
+            float r = RingRadius * Mathf.Deg2Rad;
+            var dir = Mathf.Cos(r) * Vector3.forward + Mathf.Sin(r) * new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0);
 
             var quad = MakeQuad("Flag " + langs[i].Label, 1.2f, 0.6f, Shader.Find("Unlit/Texture"));
             quad.GetComponent<Renderer>().material.mainTexture = langs[i].Flag;
@@ -88,6 +90,22 @@ public class Kiosk : MonoBehaviour
             quad.localPosition = dir * MenuDistance;
             quad.localRotation = Quaternion.LookRotation(dir);
             flagQuads[i] = quad;
+        }
+
+        // A triangle's ring centre looks low; tilt the flags so their top and bottom edges are level around the prompt.
+        float halfHeight = Mathf.Atan2(0.3f, MenuDistance) * Mathf.Rad2Deg;
+        float top = float.MinValue, bottom = float.MaxValue;
+        foreach (var q in flagQuads)
+        {
+            float elevation = Mathf.Asin(q.localPosition.normalized.y) * Mathf.Rad2Deg;
+            top = Mathf.Max(top, elevation + halfHeight);
+            bottom = Mathf.Min(bottom, elevation - halfHeight);
+        }
+        var tilt = Quaternion.Euler((top + bottom) / 2, 0, 0); // positive X pitches down
+        foreach (var q in flagQuads)
+        {
+            q.localPosition = tilt * q.localPosition;
+            q.localRotation = tilt * q.localRotation;
         }
 
         var title = MakeText("Look at\nyour language", font, 0.03f);
