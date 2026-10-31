@@ -16,6 +16,7 @@ On every headset below, Wi-Fi and the standby timer are **not** set.
 | 1KWPH810EG8396 | After the flash it comes back without adb. Unlocked by hand from the Volume Up + Power menu. Autostart not checked with a reboot. |
 | 1KWPH802138205 | Unlocked by hand from the Volume Up + Power menu. Autostart not checked with a reboot. |
 | 1KWPH801TZ9172 | Unlocked by hand from the Volume Up + Power menu. Autostart not checked with a reboot. |
+| 1KWPH811LK8214 | Added 2026-10-31. Unlocked by hand from the Volume Up + Power menu. Autostart not checked with a reboot. |
 
 ## Not done
 | Serial | State | Next step |
