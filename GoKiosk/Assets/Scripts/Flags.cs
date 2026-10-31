@@ -32,14 +32,107 @@ public static class Flags
         return tex;
     }
 
-    public static Texture2D France() => Draw((x, y) => x < 1 / 3f ? FrBlue : x < 2 / 3f ? Color.white : FrRed);
+    static Color Hex(uint rgb) => new Color32((byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb, 255);
 
-    public static Texture2D Netherlands() => Draw((x, y) => y > 2 / 3f ? NlRed : y > 1 / 3f ? Color.white : NlBlue);
+    // Flag for a video's language code (the file name, e.g. ENG.mp4), or null if there is none built in.
+    // Language-specific: one flag per language, not per country.
+    public static Texture2D For(string code)
+    {
+        switch (code)
+        {
+            case "ENG": return UK();
+            case "FRA": return France();
+            case "NED": return Netherlands();
+            case "DEU": return Germany();
+            case "SPA": return Spain();
+            case "ITA": return VBands(Hex(0x009246), Color.white, Hex(0xCE2B37));
+            case "POR": return Portugal();
+            case "POL": return HBands(Color.white, Hex(0xDC143C));
+            case "CES": return Czech();
+            case "HUN": return HBands(Hex(0xCE2939), Color.white, Hex(0x477050));
+            case "RON": return VBands(Hex(0x002B7F), Hex(0xFCD116), Hex(0xCE1126));
+            case "BUL": return HBands(Color.white, Hex(0x00966E), Hex(0xD62612));
+            case "HRV": return Croatia();
+            case "GRE": return Greece();
+            case "SWE": return Nordic(Hex(0x006AA7), Hex(0xFECC02));
+            case "DAN": return Nordic(Hex(0xC8102E), Color.white);
+            case "NOR": return Nordic(Hex(0xBA0C2F), Color.white, Hex(0x00205B));
+            case "FIN": return Nordic(Color.white, Hex(0x002F6C));
+            case "ISL": return Nordic(Hex(0x02529C), Color.white, Hex(0xDC1E35));
+            case "EST": return HBands(Hex(0x0072CE), Color.black, Color.white);
+            case "LAV": return Draw((x, y) => Mathf.Abs(y - 0.5f) < 0.1f ? Color.white : Hex(0x9E3039));
+            case "LIT": return HBands(Hex(0xFDB913), Hex(0x006A44), Hex(0xC1272D));
+            case "UKR": return HBands(Hex(0x0057B7), Hex(0xFFD700));
+            case "GLE": return VBands(Hex(0x169B62), Color.white, Hex(0xFF883E));
+            case "LTZ": return HBands(Hex(0xEF3340), Color.white, Hex(0x00A3E0));
+            case "CAT": return Draw((x, y) => (int)(y * 9) % 2 == 1 ? Hex(0xDA121A) : Hex(0xFCDD09));
+            default: return null;
+        }
+    }
 
-    public static Texture2D Germany() => Draw((x, y) => y > 2 / 3f ? Color.black : y > 1 / 3f ? DeRed : DeGold);
+    // Plain light grey; the kiosk writes the language code on it.
+    public static Texture2D Unknown() => Draw((x, y) => new Color(0.85f, 0.85f, 0.85f));
+
+    // Equal horizontal stripes, listed top to bottom.
+    static Texture2D HBands(params Color[] c) => Draw((x, y) => HBandColour(y, c));
+
+    // Equal vertical stripes, listed left to right.
+    static Texture2D VBands(params Color[] c) => Draw((x, y) => c[Mathf.Min(c.Length - 1, (int)(x * c.Length))]);
+
+    // Scandinavian cross, shifted towards the hoist; optional inner cross (Norway, Iceland).
+    static Texture2D Nordic(Color field, Color cross, Color? inner = null) => Draw((x, y) =>
+    {
+        float dx = Mathf.Abs(x - 0.375f) * 2f, dy = Mathf.Abs(y - 0.5f); // dx in flag-height units (2:1 flag)
+        if (inner.HasValue && (dx < 0.0625f || dy < 0.0625f)) return inner.Value;
+        if (dx < 0.125f || dy < 0.125f) return cross;
+        return field;
+    });
+
+    public static Texture2D France() => VBands(FrBlue, Color.white, FrRed);
+
+    public static Texture2D Netherlands() => HBands(NlRed, Color.white, NlBlue);
+
+    public static Texture2D Germany() => HBands(Color.black, DeRed, DeGold);
 
     // Red-yellow-red with the yellow band twice as tall (civil flag, no coat of arms).
     public static Texture2D Spain() => Draw((x, y) => y > 0.75f || y < 0.25f ? EsRed : EsYellow);
+
+    // Green and red with a simplified yellow armillary ring (no shield).
+    static Texture2D Portugal() => Draw((x, y) =>
+    {
+        float dx = (x - 0.4f) * 2f, dy = y - 0.5f, r = Mathf.Sqrt(dx * dx + dy * dy);
+        if (r > 0.17f && r < 0.23f) return Hex(0xFFE000);
+        return x < 0.4f ? Hex(0x006600) : Hex(0xFF0000);
+    });
+
+    // White over red with a blue triangle at the hoist.
+    static Texture2D Czech() => Draw((x, y) =>
+        x * 2f < 0.5f - Mathf.Abs(y - 0.5f) ? Hex(0x11457E) : y > 0.5f ? Color.white : Hex(0xD7141A));
+
+    // Red-white-blue with a simplified red-and-white chequered shield.
+    static Texture2D Croatia() => Draw((x, y) =>
+    {
+        float sx = (x - 0.5f) * 2f, sy = y - 0.5f; // flag-height units
+        if (Mathf.Abs(sx) < 0.15f && Mathf.Abs(sy) < 0.2f)
+        {
+            int cx = Mathf.FloorToInt((sx + 0.15f) / 0.06f), cy = Mathf.FloorToInt((sy + 0.2f) / 0.08f);
+            return (cx + cy) % 2 == 0 ? Hex(0xFF0000) : Color.white;
+        }
+        return HBandColour(y, Hex(0xFF0000), Color.white, Hex(0x171796));
+    });
+
+    static Color HBandColour(float y, params Color[] c) => c[Mathf.Min(c.Length - 1, (int)((1 - y) * c.Length))];
+
+    // Nine blue and white stripes with a white cross on a blue canton.
+    static Texture2D Greece() => Draw((x, y) =>
+    {
+        var blue = Hex(0x0D5EAF);
+        int stripe = Mathf.Min(8, (int)((1 - y) * 9));
+        float cx = x * 2f, cy = 1 - y; // flag-height units from the top-left
+        if (cx < 5 / 9f && cy < 5 / 9f)
+            return Mathf.Abs(cx - 2.5f / 9f) < 0.5f / 9f || Mathf.Abs(cy - 2.5f / 9f) < 0.5f / 9f ? Color.white : blue;
+        return stripe % 2 == 0 ? blue : Color.white;
+    });
 
     // Union Jack on a 60x30 grid.
     public static Texture2D UK() => Draw((u, v) =>

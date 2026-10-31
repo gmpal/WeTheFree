@@ -1,0 +1,4 @@
+# Belgium build: menu order, first flag at the top. Run: .\provision.ps1 -VideoList .\belgium.txt
+ENG = C:\Users\gmpal\Videos\wtf\go_leveled\ENG.mp4
+FRA = C:\Users\gmpal\Videos\wtf\go_leveled\FRA.mp4
+NED = C:\Users\gmpal\Videos\wtf\go_leveled\NED.mp4

@@ -13,7 +13,9 @@ public class Kiosk : MonoBehaviour
     const float GazeAngle = 11f;     // degrees from flag centre that count as "looking at it"
     const float MenuDistance = 3f;
     // Flags sit on a ring around the prompt, so just looking ahead never selects one.
-    const float RingRadius = 28f;    // degrees from the prompt to each flag centre
+    const float RingRadius = 28f;    // degrees from the prompt to each flag centre (minimum)
+    const float FlagBorder = 0.03f;  // white border width around each flag (metres at MenuDistance)
+    const float MinFlagGap = 30f;   // degrees between neighbouring flag centres (a flag is ~23° wide)
     const float RealignAngle = 60f;  // looking this far from the menu centre...
     const float RealignAfter = 1f;   // ...for this long re-centres the menu
     const float SettleDelay = 0.3f;  // wait for tracking to settle after the headset is put on
@@ -50,12 +52,7 @@ public class Kiosk : MonoBehaviour
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         StartWatchdog();
 
-        langs = new[]
-        {
-            new Lang { File = "ENG.mp4", Label = "English", Flag = Flags.UK() },
-            new Lang { File = "FRA.mp4", Label = "Français", Flag = Flags.France() },
-            new Lang { File = "NED.mp4", Label = "Nederlands", Flag = Flags.Netherlands() },
-        };
+        langs = LoadLanguages();
 
         cam = new GameObject("Camera").AddComponent<Camera>();
         cam.tag = "MainCamera";
@@ -66,9 +63,34 @@ public class Kiosk : MonoBehaviour
         BuildReticle();
         BuildPlayer();
         ShowMenu();
+        if (langs.Length == 0) status.text = "No videos";
     }
 
     // ---------- construction ----------
+
+    // One flag per CODE.mp4 on the headset, ordered by languages.txt (one code per line) when present.
+    static Lang[] LoadLanguages()
+    {
+        string dir = Application.persistentDataPath;
+        string order = Path.Combine(dir, "languages.txt");
+        var codes = new System.Collections.Generic.List<string>();
+        if (File.Exists(order))
+        {
+            foreach (var line in File.ReadAllLines(order))
+                if (line.Trim().Length > 0) codes.Add(line.Trim().ToUpperInvariant());
+        }
+        else
+        {
+            foreach (var f in Directory.GetFiles(dir, "*.mp4")) codes.Add(Path.GetFileNameWithoutExtension(f).ToUpperInvariant());
+            codes.Sort();
+        }
+
+        var result = new System.Collections.Generic.List<Lang>();
+        foreach (var code in codes)
+            result.Add(new Lang { File = code + ".mp4", Label = code, Flag = Flags.For(code) });
+        Debug.Log("GOKIOSK languages: " + string.Join(", ", codes));
+        return result.ToArray();
+    }
 
     void BuildMenu()
     {
@@ -76,16 +98,35 @@ public class Kiosk : MonoBehaviour
         flagQuads = new Transform[langs.Length];
         var font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
-        for (int i = 0; i < langs.Length; i++)
+        // Flags form a regular polygon: triangle for 3, square for 4, pentagon for 5...
+        // An odd count puts a point at the top; an even count gets a flat top and bottom.
+        int n = langs.Length;
+        float startAngle = 90f + (n % 2 == 0 ? 180f / n : 0f);
+        // Widen the ring when there are many flags so neighbours never overlap.
+        float radius = n < 2 ? RingRadius : Mathf.Max(RingRadius, MinFlagGap / (2 * Mathf.Sin(Mathf.PI / n)));
+        float r = radius * Mathf.Deg2Rad;
+
+        for (int i = 0; i < n; i++)
         {
-            // First flag at the top, the rest evenly spaced clockwise.
-            float a = (90f - i * 360f / langs.Length) * Mathf.Deg2Rad;
-            // Exactly RingRadius from straight ahead (Euler pitch/yaw would squash the ring).
-            float r = RingRadius * Mathf.Deg2Rad;
+            // Clockwise from the top; exactly `radius` from straight ahead (Euler pitch/yaw would squash it).
+            float a = (startAngle - i * 360f / n) * Mathf.Deg2Rad;
             var dir = Mathf.Cos(r) * Vector3.forward + Mathf.Sin(r) * new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0);
 
             var quad = MakeQuad("Flag " + langs[i].Label, 1.2f, 0.6f, Shader.Find("Unlit/Texture"));
-            quad.GetComponent<Renderer>().material.mainTexture = langs[i].Flag;
+            quad.GetComponent<Renderer>().material.mainTexture = langs[i].Flag ?? Flags.Unknown();
+            // Thin white border so dark stripes (e.g. Germany's black) stand out from the background.
+            var border = MakeQuad("Border", 1.2f + 2 * FlagBorder, 0.6f + 2 * FlagBorder, Shader.Find("Unlit/Texture"));
+            border.GetComponent<Renderer>().material.mainTexture = Texture2D.whiteTexture;
+            border.SetParent(quad, false);
+            border.localPosition = new Vector3(0, 0, 0.01f); // just behind the flag
+            if (langs[i].Flag == null)
+            {
+                // No built-in flag for this code: show the code itself.
+                var code = MakeText(langs[i].Label, font, 0.04f);
+                code.color = Color.black;
+                code.transform.SetParent(quad, false);
+                code.transform.localPosition = new Vector3(0, 0, -0.01f);
+            }
             quad.SetParent(menuRoot, false);
             quad.localPosition = dir * MenuDistance;
             quad.localRotation = Quaternion.LookRotation(dir);
@@ -248,6 +289,18 @@ public class Kiosk : MonoBehaviour
 
     void Update()
     {
+        // Debug: `adb shell touch .../files/screenshot.req` saves what the headset shows to files/screenshot.png
+        // (the system screencap only sees black while VR is running).
+        if (Time.frameCount % 30 == 0)
+        {
+            string req = Path.Combine(Application.persistentDataPath, "screenshot.req");
+            if (File.Exists(req))
+            {
+                File.Delete(req);
+                ScreenCapture.CaptureScreenshot("screenshot.png"); // relative to persistentDataPath on Android
+            }
+        }
+
         // Headset taken off -> back to menu; put back on -> re-align the menu to the new wearer.
         bool present = XRDevice.userPresence != UserPresenceState.NotPresent;
         if (!present && !inMenu) ShowMenu();
