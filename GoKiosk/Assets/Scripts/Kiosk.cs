@@ -12,8 +12,8 @@ public class Kiosk : MonoBehaviour
     const float DwellTime = 2f;      // seconds of gaze needed to select
     const float GazeAngle = 11f;     // degrees from flag centre that count as "looking at it"
     const float MenuDistance = 3f;
-    const float FlagSpacing = 32f;   // degrees between flags
-    const float MenuPitch = -12f;    // flags slightly below eye level
+    // Flags sit on a ring around the prompt, so just looking ahead never selects one.
+    const float RingRadius = 28f;    // degrees from the prompt to each flag centre
     const float RealignAngle = 60f;  // looking this far from the menu centre...
     const float RealignAfter = 1f;   // ...for this long re-centres the menu
     const float SettleDelay = 0.3f;  // wait for tracking to settle after the headset is put on
@@ -78,8 +78,9 @@ public class Kiosk : MonoBehaviour
 
         for (int i = 0; i < langs.Length; i++)
         {
-            float yaw = (i - (langs.Length - 1) / 2f) * FlagSpacing;
-            var dir = Quaternion.Euler(-MenuPitch, yaw, 0) * Vector3.forward;
+            // First flag at the top, the rest evenly spaced clockwise.
+            float a = (90f - i * 360f / langs.Length) * Mathf.Deg2Rad;
+            var dir = Quaternion.Euler(-RingRadius * Mathf.Sin(a), RingRadius * Mathf.Cos(a), 0) * Vector3.forward;
 
             var quad = MakeQuad("Flag " + langs[i].Label, 1.2f, 0.6f, Shader.Find("Unlit/Texture"));
             quad.GetComponent<Renderer>().material.mainTexture = langs[i].Flag;
@@ -89,13 +90,13 @@ public class Kiosk : MonoBehaviour
             flagQuads[i] = quad;
         }
 
-        var title = MakeText("Look at your language", font, 0.06f);
+        var title = MakeText("Look at\nyour language", font, 0.03f);
         title.transform.SetParent(menuRoot, false);
-        title.transform.localPosition = new Vector3(0, 0.9f, MenuDistance);
+        title.transform.localPosition = new Vector3(0, 0, MenuDistance);
 
         status = MakeText("", font, 0.04f);
         status.transform.SetParent(menuRoot, false);
-        status.transform.localPosition = new Vector3(0, -1.6f, MenuDistance);
+        status.transform.localPosition = new Vector3(0, -0.45f, MenuDistance);
     }
 
     void BuildReticle()
