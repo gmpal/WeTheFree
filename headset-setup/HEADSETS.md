@@ -23,4 +23,4 @@ On every headset below, Wi-Fi and the standby timer are **not** set.
 ## Other
 | Serial | State |
 |---|---|
-| 1KWPH800DS9427 | The original development headset. Has the Belgium build, plus DEU.mp4 and SPA.mp4 left on it (unused, about 850 MB). |
+| 1KWPH800DS9427 | The original development headset. Has the Belgium build. |
