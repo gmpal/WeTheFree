@@ -132,7 +132,8 @@ public class Kiosk : MonoBehaviour
         player.targetTexture = videoTexture;
         player.audioOutputMode = VideoAudioOutputMode.Direct;
         player.loopPointReached += _ => ShowMenu();
-        player.prepareCompleted += vp => { vp.Play(); };
+        // Back in the menu while loading (e.g. headset taken off) -> don't start playing behind it.
+        player.prepareCompleted += vp => { if (inMenu) vp.Stop(); else vp.Play(); };
         // Only show the 360 view once the new video has drawn its first frame (avoids stale frames).
         player.frameReady += (vp, frame) =>
         {
@@ -148,7 +149,7 @@ public class Kiosk : MonoBehaviour
 
     void ShowMenu()
     {
-        if (player.isPlaying || player.isPrepared) player.Stop();
+        player.Stop(); // also cancels a Prepare() still in progress
         ClearVideoTexture();
         inMenu = true;
         status.text = "";
@@ -235,7 +236,8 @@ public class Kiosk : MonoBehaviour
         wasPresent = present;
 
         if (alignAt >= 0 && Time.time >= alignAt) AlignMenu();
-        if (!inMenu) return;
+        // Nobody wearing it (e.g. being carried) -> gaze must not select anything.
+        if (!inMenu || !present) { gazedIndex = -1; SetProgress(0); return; }
 
         // Viewer looking well away from the flags for a while -> bring the menu to them.
         float off = Mathf.Abs(Mathf.DeltaAngle(cam.transform.eulerAngles.y, menuYaw));
